@@ -1,4 +1,6 @@
-const log = require("debug")("crawlx-filters");
+const debug = function () {
+  console.error(...arguments);
+};
 
 module.exports = {
   int: (v, defaultVal) => {
@@ -9,18 +11,13 @@ module.exports = {
     let d = typeof defaultVal === "undefined" ? v : defaultVal;
     return parseFloat(/[+-]?([0-9]*[.])?[0-9]+/.exec(d) || [d]);
   },
-  bool: v => Boolean(v),
-  trim: value => (typeof value === "string" ? value.trim() : value),
+  bool: (v) => Boolean(v),
+  trim: (value) => (typeof value === "string" ? value.trim() : value),
   slice: (value, start, end) => value.slice(start, end),
-  reverse: value =>
-    value
-      .split("")
-      .reverse()
-      .join(""),
+  reverse: (value) => value.split("").reverse().join(""),
   date: (v, append) => {
     if (append && typeof v === "string") v += append;
     let r = new Date(v);
-
     if (isNaN(r)) {
       let m = /(\d{4})\D*(\d{2})\D*(\d{2})\D*(\d{2}:\d{2}(:\d{2})?)?/.exec(v);
       if (m) {
@@ -30,10 +27,9 @@ module.exports = {
     return r;
   },
   size: (() => {
-    let debug = log.extend("parseSize");
-    let validAmount = n => !isNaN(parseFloat(n)) && isFinite(n);
-    let parsableUnit = u => u.match(/\D*/).pop() === u;
-    return function(input) {
+    let validAmount = (n) => !isNaN(parseFloat(n)) && isFinite(n);
+    let parsableUnit = (u) => u.match(/\D*/).pop() === u;
+    return function (input) {
       let parsed = input.toString().match(/.*?([0-9\.,]+)(?:\s*)?(\w*).*/);
       if (!parsed) {
         debug(`Match failed: ${input}`);
@@ -41,7 +37,7 @@ module.exports = {
       }
       let amount = parsed[1].replace(",", ".");
       let unit = parsed[2];
-      let validUnit = function(sourceUnit) {
+      let validUnit = function (sourceUnit) {
         return sourceUnit === unit;
       };
       if (!validAmount(amount) || !parsableUnit(unit)) {
@@ -64,7 +60,7 @@ module.exports = {
         [["Pb"], 1.407e14],
         [["p", "P", "pb", "PB", "PiB", "Pi", "pi"], Math.pow(1024, 5)],
         [["Eb"], 1.441e17],
-        [["e", "E", "eb", "EB", "EiB", "Ei", "ei"], Math.pow(1024, 6)]
+        [["e", "E", "eb", "EB", "EiB", "Ei", "ei"], Math.pow(1024, 6)],
       ];
       for (let i = 0; i < increments.length; i++) {
         let _increment = increments[i];
@@ -77,5 +73,5 @@ module.exports = {
       debug(unit + " doesn't appear to be a valid unit");
       return input;
     };
-  })()
+  })(),
 };
