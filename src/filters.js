@@ -30,6 +30,7 @@ module.exports = {
     let validAmount = (n) => !isNaN(parseFloat(n)) && isFinite(n);
     let parsableUnit = (u) => u.match(/\D*/).pop() === u;
     return function (input) {
+      if(typeof input !== 'string') return input;
       let parsed = input.toString().match(/.*?([0-9\.,]+)(?:\s*)?(\w*).*/);
       if (!parsed) {
         debug(`Match failed: ${input}`);
