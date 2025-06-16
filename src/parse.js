@@ -1,5 +1,5 @@
 /**
- * @fileoverview 数据解析核心模块
+ * @fileoverview 数据解析核心模块 - 简化版，专注于语法糖和过滤器
  * @module parse
  */
 
@@ -8,60 +8,7 @@ const defaultFilters = require('./filters');
 const { FilterError } = require('./errors');
 
 /**
- * 应用条件过滤
- * @private
- * @param {Object} elements - Cheerio 元素集合
- * @param {Object} condition - 条件对象
- * @returns {Object} 过滤后的元素集合
- */
-function applyCondition(elements, condition) {
-  if (!condition) return elements;
-
-  switch (condition.type) {
-  case 'first':
-    return elements.first();
-  case 'last':
-    return elements.last();
-  case 'empty':
-    return elements.filter(':empty');
-  case 'not-empty':
-    return elements.filter(':not(:empty)');
-  case 'contains':
-    return elements.filter(`:contains("${condition.value}")`);
-  case 'has-class':
-    return elements.filter(`.${condition.value}`);
-  case 'has-attribute':
-    return elements.filter(`[${condition.attribute}]`);
-  case 'attribute':
-    return elements.filter(`[${condition.attribute}="${condition.value}"]`);
-  case 'selector':
-    return elements.filter(condition.value);
-  case 'pseudo':
-    return elements.filter(`:${condition.value}`);
-  default:
-    return elements;
-  }
-}
-
-/**
- * 处理嵌套查询
- * @private
- * @param {Array} nested - 嵌套选择器数组
- * @param {CheerioAPI} $ - Cheerio 实例
- * @returns {Object} 最终的元素集合
- */
-function processNested(nested, $) {
-  let current = $(nested[0]);
-
-  for (let i = 1; i < nested.length; i++) {
-    current = current.find(nested[i]);
-  }
-
-  return current;
-}
-
-/**
- * 解析单个查询规则
+ * 解析单个查询规则 - 简化版
  * @private
  * @param {string|Function} query - 查询规则或函数
  * @param {CheerioAPI} $ - Cheerio 实例
@@ -71,39 +18,29 @@ function processNested(nested, $) {
 function parse_one(query, $, filters) {
   if (typeof query === 'function') return query();
 
-  let q = queryParser(query);
-  let elements;
+  const q = queryParser(query);
 
-  // 处理嵌套查询
-  if (q.nested) {
-    elements = processNested(q.nested, $);
-  } else if (q.selector) {
-    elements = $(q.selector);
-  } else {
-    elements = $().addBack();
-  }
-
-  // 应用条件过滤
-  if (q.condition) {
-    elements = applyCondition(elements, q.condition);
-  }
+  // 直接使用 Cheerio 原生选择器（已经处理了语法糖转换）
+  const elements = q.selector ? $(q.selector) : $().addBack();
 
   // 提取值
   let vals = elements.extractAll(q.attribute);
 
-  // filters operation
+  // 应用过滤器
   if (q.getAll) {
+    // 处理数组结果
     for (const filterInfo of q.filters) {
-      let name = filterInfo['name'];
+      const name = filterInfo['name'];
       vals = vals.map(val => {
         return filters[name](val, ...filterInfo['args']);
       });
     }
     return vals;
   } else {
+    // 处理单个结果
     let val = vals[0];
     for (const filterInfo of q.filters) {
-      let name = filterInfo['name'];
+      const name = filterInfo['name'];
       try {
         if (!filters[name]) {
           throw new FilterError(

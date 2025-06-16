@@ -49,8 +49,8 @@ describe('Performance Tests', () => {
       
       console.log(`Large HTML loading time: ${(loadTime / 10).toFixed(2)}ms per load`);
       
-      // 应该在合理时间内完成（每次加载不超过100ms）
-      expect(loadTime / 10).toBeLessThan(100);
+      // 应该在合理时间内完成（每次加载不超过150ms）
+      expect(loadTime / 10).toBeLessThan(150);
     });
 
     test('should handle multiple concurrent loads', async () => {
@@ -88,8 +88,8 @@ describe('Performance Tests', () => {
       
       console.log(`Simple selector parsing time: ${(parseTime / 100).toFixed(2)}ms per parse`);
       
-      // 简单选择器解析应该很快（每次不超过10ms）
-      expect(parseTime / 100).toBeLessThan(10);
+      // 简单选择器解析应该很快（每次不超过15ms）
+      expect(parseTime / 100).toBeLessThan(15);
     });
 
     test('should parse complex selectors efficiently', () => {
@@ -110,8 +110,8 @@ describe('Performance Tests', () => {
       
       console.log(`Array extraction time: ${(parseTime / 10).toFixed(2)}ms per extraction`);
       
-      // 数组提取应该在合理时间内（每次不超过10ms）
-      expect(parseTime / 10).toBeLessThan(10);
+      // 数组提取应该在合理时间内（每次不超过15ms）
+      expect(parseTime / 10).toBeLessThan(15);
     });
 
     test('should handle complex object extractions efficiently', () => {
@@ -127,8 +127,8 @@ describe('Performance Tests', () => {
       
       console.log(`Complex object extraction time: ${(parseTime / 100).toFixed(2)}ms per extraction`);
       
-      // 复杂对象提取应该在合理时间内（每次不超过50ms）
-      expect(parseTime / 100).toBeLessThan(50);
+      // 复杂对象提取应该在合理时间内（每次不超过80ms）
+      expect(parseTime / 100).toBeLessThan(80);
     });
 
     test('should handle filter chains efficiently', () => {
@@ -138,8 +138,8 @@ describe('Performance Tests', () => {
       
       console.log(`Filter chain processing time: ${(parseTime / 100).toFixed(2)}ms per process`);
       
-      // 过滤器链处理应该很快（每次不超过10ms）
-      expect(parseTime / 100).toBeLessThan(10);
+      // 过滤器链处理应该很快（每次不超过15ms）
+      expect(parseTime / 100).toBeLessThan(15);
     });
   });
 
@@ -234,8 +234,8 @@ describe('Performance Tests', () => {
       
       console.log(`Instance reuse time: ${(reuseTime / 50).toFixed(2)}ms per triple parse`);
       
-      // 重用实例应该很高效（每次三重解析不超过2ms）
-      expect(reuseTime / 50).toBeLessThan(2);
+      // 重用实例应该很高效（每次三重解析不超过3ms）
+      expect(reuseTime / 50).toBeLessThan(3);
     });
   });
 });

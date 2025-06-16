@@ -1,6 +1,6 @@
 /**
  * cparse 高级功能示例
- * 展示新增的过滤器、条件查询、嵌套查询等功能
+ * 展示语法糖功能、过滤器系统和结构化数据提取
  */
 
 const { loadCheerio, parse } = require('../index.js');
@@ -81,8 +81,25 @@ const $ = loadCheerio(html);
 
 console.log('=== cparse 高级功能示例 ===\n');
 
-// 1. 新增过滤器示例
-console.log('1. 新增过滤器示例:');
+// 1. 语法糖功能示例
+console.log('1. 语法糖功能示例:');
+console.log('属性提取语法:');
+console.log('  链接地址:', parse('[nav a@href]', $));
+console.log('  文章ID:', parse('[.post@data-id]', $));
+
+console.log('\n数组提取语法:');
+console.log('  所有标题:', parse('[.title]', $));
+console.log('  所有标签:', parse('[.tag]', $));
+
+console.log('\n类条件简化:');
+console.log('  活跃菜单项:', parse('.menu-item[.active] .nav-link', $));
+console.log('  外部链接:', parse('a[.external]@href', $));
+
+console.log('\n自定义伪选择器:');
+console.log('  非空段落:', parse('p:not-empty', $));
+
+// 2. 强大的过滤器系统
+console.log('\n2. 强大的过滤器系统:');
 console.log('字符串处理:');
 console.log('  大写转换:', parse('.title | upper', $));
 console.log('  首字母大写:', parse('.author | capitalize', $));
@@ -103,38 +120,22 @@ console.log('\n数字处理:');
 console.log('  浮点数:', parse('.views | regex:\\d+ | first | float', $));
 console.log('  格式化数字:', parse('.views | regex:\\d+ | first | number:0', $));
 
-// 2. 条件查询示例
-console.log('\n2. 条件查询示例:');
-console.log('类条件查询:');
-console.log('  活跃菜单项:', parse('.menu-item[.active] .nav-link', $));
-console.log('  外部链接:', parse('a[.external]@href', $));
+// 3. Cheerio 原生选择器支持
+console.log('\n3. Cheerio 原生选择器支持:');
+console.log('标准 CSS 选择器:');
+console.log('  第一篇文章:', parse('.post:first-child .title', $));
+console.log('  最后一篇文章:', parse('.post:last-child .title', $));
+console.log('  属性选择器:', parse('a[href="/products"]', $));
+console.log('  包含文本:', parse('a:contains("产品")', $));
 
-console.log('\n属性条件查询:');
-console.log('  第一篇文章:', parse('.post[data-id=1] .title', $));
-console.log('  有data-count属性的链接:', parse('[a[data-count]]', $));
-
-console.log('\n伪选择器条件:');
-console.log('  第一篇文章标题:', parse('.post:first .title', $));
-console.log('  最后一篇文章标题:', parse('.post:last .title', $));
-
-// 3. 嵌套查询示例
-console.log('\n3. 嵌套查询示例:');
-console.log('简单嵌套:');
+console.log('\n嵌套选择器:');
 console.log('  导航链接:', parse('[nav > ul > li > a@href]', $));
 console.log('  文章标题:', parse('[main > article > h1]', $));
-
-console.log('\n复杂嵌套:');
 console.log('  文章元数据:', parse('[article > .meta > span]', $));
 console.log('  侧边栏标签链接:', parse('[aside > .widget > .tag-cloud > a@href]', $));
 
-// 4. 组合查询示例
-console.log('\n4. 组合查询示例:');
-console.log('条件 + 嵌套 + 过滤器:');
-console.log('  活跃菜单链接文本:', parse('nav > ul > li[.active] > a | trim | upper', $));
-console.log('  第一篇文章的标签:', parse('article:first > .tags > .tag | join:, ', $));
-
-// 5. 复杂数据提取示例
-console.log('\n5. 复杂数据提取示例:');
+// 4. 复杂数据提取示例
+console.log('\n4. 复杂数据提取示例:');
 
 // 提取导航菜单
 const navigation = parse({
@@ -191,14 +192,15 @@ const sidebar = parse({
 
 console.log('\n侧边栏信息:', JSON.stringify(sidebar, null, 2));
 
-// 6. 错误处理示例
-console.log('\n6. 错误处理示例:');
+// 5. 错误处理示例
+console.log('\n5. 错误处理示例:');
 
 try {
   // 使用不存在的过滤器
   parse('.title | unknownFilter', $);
 } catch (error) {
   console.log('过滤器错误:', error.name, '-', error.message);
+  console.log('可用过滤器:', error.context?.availableFilters?.slice(0, 5).join(', '), '...');
 }
 
 try {
@@ -208,8 +210,8 @@ try {
   console.log('查询错误:', error.name, '-', error.message);
 }
 
-// 7. 性能优化示例
-console.log('\n7. 性能优化示例:');
+// 6. 性能优化示例
+console.log('\n6. 性能优化示例:');
 
 // 批量提取 vs 多次单独提取
 console.time('批量提取');

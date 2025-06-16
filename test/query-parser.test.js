@@ -12,9 +12,7 @@ describe('Query Parser', () => {
         selector: 'h1',
         attribute: undefined,
         filters: [],
-        getAll: false,
-        condition: null,
-        nested: null
+        getAll: false
       });
     });
 
@@ -24,9 +22,7 @@ describe('Query Parser', () => {
         selector: 'a',
         attribute: 'href',
         filters: [],
-        getAll: false,
-        condition: null,
-        nested: null
+        getAll: false
       });
     });
 
@@ -36,9 +32,7 @@ describe('Query Parser', () => {
         selector: '.title',
         attribute: undefined,
         filters: [],
-        getAll: false,
-        condition: null,
-        nested: null
+        getAll: false
       });
     });
 
@@ -48,9 +42,7 @@ describe('Query Parser', () => {
         selector: '#main',
         attribute: undefined,
         filters: [],
-        getAll: false,
-        condition: null,
-        nested: null
+        getAll: false
       });
     });
   });
@@ -62,9 +54,7 @@ describe('Query Parser', () => {
         selector: 'h1',
         attribute: undefined,
         filters: [],
-        getAll: true,
-        condition: null,
-        nested: null
+        getAll: true
       });
     });
 
@@ -74,9 +64,7 @@ describe('Query Parser', () => {
         selector: 'a',
         attribute: 'href',
         filters: [],
-        getAll: true,
-        condition: null,
-        nested: null
+        getAll: true
       });
     });
 
@@ -86,9 +74,7 @@ describe('Query Parser', () => {
         selector: '.title',
         attribute: undefined,
         filters: [],
-        getAll: true,
-        condition: null,
-        nested: null
+        getAll: true
       });
     });
   });
@@ -132,29 +118,22 @@ describe('Query Parser', () => {
       expect(result.attribute).toBeUndefined();
     });
 
-    test('should parse child selectors', () => {
+    test('should parse child selectors (Cheerio native)', () => {
       const result = queryParser('ul > li');
-      expect(result.nested).toEqual(['ul', 'li']);
-      expect(result.selector).toBe('li');
+      expect(result.selector).toBe('ul > li');
+      expect(result.attribute).toBeUndefined();
     });
 
-    test('should parse pseudo selectors', () => {
+    test('should parse pseudo selectors (Cheerio native)', () => {
       const result = queryParser('li:first-child');
-      expect(result.selector).toBe('li');
-      expect(result.condition).toEqual({
-        type: 'selector',
-        value: 'first-child'
-      });
+      expect(result.selector).toBe('li:first-child');
+      expect(result.attribute).toBeUndefined();
     });
 
-    test('should parse attribute selectors', () => {
+    test('should parse attribute selectors (Cheerio native)', () => {
       const result = queryParser('input[type="text"]');
-      expect(result.selector).toBe('input');
-      expect(result.condition).toEqual({
-        type: 'attribute',
-        attribute: 'type',
-        value: 'text'
-      });
+      expect(result.selector).toBe('input[type="text"]');
+      expect(result.attribute).toBeUndefined();
     });
   });
 
@@ -220,132 +199,74 @@ describe('Query Parser', () => {
     });
   });
 
-  describe('condition queries', () => {
-    test('should parse class condition', () => {
+  describe('syntax sugar features', () => {
+    test('should parse class condition syntax sugar', () => {
       const result = queryParser('div[.active]');
-      expect(result.selector).toBe('div');
-      expect(result.condition).toEqual({
-        type: 'has-class',
-        value: 'active'
-      });
-      expect(result.nested).toBe(null);
+      expect(result.selector).toBe('div.active');
+      expect(result.attribute).toBeUndefined();
     });
 
-    test('should parse pseudo selectors', () => {
+    test('should parse not-empty syntax sugar', () => {
+      const result = queryParser('p:not-empty');
+      expect(result.selector).toBe('p:not(:empty)');
+      expect(result.attribute).toBeUndefined();
+    });
+
+    test('should handle Cheerio native selectors directly', () => {
       const result = queryParser('li:first');
-      expect(result.selector).toBe('li');
-      expect(result.condition).toEqual({
-        type: 'first'
-      });
+      expect(result.selector).toBe('li:first');
+      expect(result.attribute).toBeUndefined();
     });
 
-    test('should parse contains condition', () => {
+    test('should handle Cheerio native contains', () => {
       const result = queryParser('p:contains("hello")');
-      expect(result.selector).toBe('p');
-      expect(result.condition).toEqual({
-        type: 'contains',
-        value: 'hello'
-      });
+      expect(result.selector).toBe('p:contains("hello")');
+      expect(result.attribute).toBeUndefined();
     });
 
-    test('should parse attribute conditions', () => {
+    test('should handle Cheerio native attribute selectors', () => {
       const result = queryParser('input[type=text]');
-      expect(result.selector).toBe('input');
-      expect(result.condition).toEqual({
-        type: 'attribute',
-        attribute: 'type',
-        value: 'text'
-      });
+      expect(result.selector).toBe('input[type=text]');
+      expect(result.attribute).toBeUndefined();
     });
 
-    test('should parse has-attribute conditions', () => {
+    test('should handle Cheerio native has-attribute selectors', () => {
       const result = queryParser('img[alt]');
-      expect(result.selector).toBe('img');
-      expect(result.condition).toEqual({
-        type: 'has-attribute',
-        attribute: 'alt'
-      });
+      expect(result.selector).toBe('img[alt]');
+      expect(result.attribute).toBeUndefined();
     });
 
-    test('should parse condition with attribute extraction', () => {
+    test('should parse syntax sugar with attribute extraction', () => {
       const result = queryParser('a[.external]@href');
-      expect(result.selector).toBe('a[.external]');
+      expect(result.selector).toBe('a.external');
       expect(result.attribute).toBe('href');
-      expect(result.condition).toBe(null);
-    });
-  });
-
-  describe('nested queries', () => {
-    test('should parse simple nested query', () => {
-      const result = queryParser('ul > li');
-      expect(result.nested).toEqual(['ul', 'li']);
-      expect(result.selector).toBe('li');
-    });
-
-    test('should parse complex nested query', () => {
-      const result = queryParser('div > ul > li > a');
-      expect(result.nested).toEqual(['div', 'ul', 'li', 'a']);
-      expect(result.selector).toBe('a');
-    });
-
-    test('should parse nested query with attribute', () => {
-      const result = queryParser('nav > ul > li > a@href');
-      expect(result.nested).toEqual(['nav', 'ul', 'li', 'a']);
-      expect(result.selector).toBe('a');
-      expect(result.attribute).toBe('href');
-    });
-
-    test('should parse nested query with condition', () => {
-      const result = queryParser('div > ul > li[.active]');
-      expect(result.nested).toEqual(['div', 'ul', 'li']);
-      expect(result.selector).toBe('li');
-      expect(result.condition).toEqual({
-        type: 'has-class',
-        value: 'active'
-      });
-    });
-
-    test('should parse nested query with getAll', () => {
-      const result = queryParser('[div > ul > li]');
-      expect(result.nested).toEqual(['div', 'ul', 'li']);
-      expect(result.selector).toBe('li');
-      expect(result.getAll).toBe(true);
-    });
-
-    test('should parse nested query with filters', () => {
-      const result = queryParser('div > span | trim | int');
-      expect(result.nested).toEqual(['div', 'span']);
-      expect(result.selector).toBe('span');
-      expect(result.filters).toHaveLength(2);
     });
   });
 
   describe('combined features', () => {
-    test('should parse nested query with condition and attribute', () => {
-      // For now, complex nested conditions are not fully supported
+    test('should parse nested selectors with attribute extraction', () => {
       const result = queryParser('nav > ul > li > a@href');
-      expect(result.nested).toEqual(['nav', 'ul', 'li', 'a']);
-      expect(result.selector).toBe('a');
+      expect(result.selector).toBe('nav > ul > li > a');
       expect(result.attribute).toBe('href');
     });
 
-    test('should parse getAll with nested and condition', () => {
+    test('should parse getAll with nested selectors', () => {
       const result = queryParser('[div > .item:first]');
-      expect(result.nested).toEqual(['div', '.item']);
-      expect(result.selector).toBe('.item');
+      expect(result.selector).toBe('div > .item:first');
       expect(result.getAll).toBe(true);
-      expect(result.condition).toEqual({
-        type: 'first'
-      });
     });
 
-    test('should parse complex query with basic features', () => {
-      // Simplified test for now - complex getAll with nested is challenging
+    test('should parse syntax sugar with nested selectors', () => {
+      const result = queryParser('div > ul > li[.active]@data-id');
+      expect(result.selector).toBe('div > ul > li.active');
+      expect(result.attribute).toBe('data-id');
+    });
+
+    test('should parse complex query with filters', () => {
       const result = queryParser('p@data-id | trim');
       expect(result.selector).toBe('p');
       expect(result.attribute).toBe('data-id');
       expect(result.getAll).toBe(false);
-      expect(result.condition).toBe(null);
       expect(result.filters).toHaveLength(1);
     });
   });
