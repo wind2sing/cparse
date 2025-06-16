@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.1](https://github.com/wind2sing/cparse/compare/v2.0.0...v2.0.1) (2024-12-16)
+
+### 🎯 重大重构优化版本
+
+这是 2.0.0 的优化版本，完成了彻底的重构工作，移除了与 Cheerio 原生功能重复的实现，专注于提供真正有价值的语法糖和过滤器功能。
+
+### ✨ 核心改进
+- **代码简化**：移除重复实现，代码量减少 40%
+- **性能提升**：直接使用 Cheerio 原生选择器，性能大幅提升
+- **专注核心**：保留语法糖和过滤器系统的核心价值
+- **文档重构**：README 全面重新组织，突出核心功能
+
+### 🚀 性能表现
+- HTML 加载：53.78ms/次
+- 选择器解析：6.06ms/次
+- 复杂对象提取：31.28ms/次
+- 内存优化：减少 32.24MB
+
+### 🧪 质量保证
+- 203 个测试用例全部通过
+- 8 个测试套件全部通过
+- 代码质量检查通过
+
 ## [2.0.0](https://github.com/wind2sing/cparse/compare/v1.0.6...v2.0.0) (2024-12-16)
 
 ### 🎯 重大重构 - 专注核心价值
