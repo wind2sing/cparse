@@ -1,6 +1,6 @@
 {
   "name": "cparse",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "一个基于 Cheerio 的 HTML 解析和数据提取工具库",
   "main": "index.js",
   "license": "MIT",
@@ -36,7 +36,19 @@
     "got",
     "http-client",
     "filter",
-    "chinese"
+    "chinese",
+    "css-selector",
+    "nested-query",
+    "conditional-query",
+    "data-processing",
+    "text-processing",
+    "regex",
+    "string-manipulation",
+    "array-processing",
+    "error-handling",
+    "validation",
+    "performance",
+    "caching"
   ],
   "homepage": "https://github.com/wind2sing/cparse#readme",
   "repository": {
@@ -50,6 +62,8 @@
     "index.js",
     "index.d.ts",
     "src/",
+    "docs/",
+    "examples/",
     "README.md",
     "CHANGELOG.md"
   ],
