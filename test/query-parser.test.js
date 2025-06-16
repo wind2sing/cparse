@@ -200,8 +200,8 @@ describe('Query Parser', () => {
   });
 
   describe('syntax sugar features', () => {
-    test('should parse class condition syntax sugar', () => {
-      const result = queryParser('div[.active]');
+    test('should handle standard CSS class selectors', () => {
+      const result = queryParser('div.active');
       expect(result.selector).toBe('div.active');
       expect(result.attribute).toBeUndefined();
     });
@@ -236,8 +236,8 @@ describe('Query Parser', () => {
       expect(result.attribute).toBeUndefined();
     });
 
-    test('should parse syntax sugar with attribute extraction', () => {
-      const result = queryParser('a[.external]@href');
+    test('should parse standard CSS with attribute extraction', () => {
+      const result = queryParser('a.external@href');
       expect(result.selector).toBe('a.external');
       expect(result.attribute).toBe('href');
     });
@@ -256,8 +256,8 @@ describe('Query Parser', () => {
       expect(result.getAll).toBe(true);
     });
 
-    test('should parse syntax sugar with nested selectors', () => {
-      const result = queryParser('div > ul > li[.active]@data-id');
+    test('should parse standard CSS with nested selectors', () => {
+      const result = queryParser('div > ul > li.active@data-id');
       expect(result.selector).toBe('div > ul > li.active');
       expect(result.attribute).toBe('data-id');
     });

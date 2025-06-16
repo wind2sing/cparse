@@ -91,9 +91,9 @@ console.log('\n数组提取语法:');
 console.log('  所有标题:', parse('[.title]', $));
 console.log('  所有标签:', parse('[.tag]', $));
 
-console.log('\n类条件简化:');
-console.log('  活跃菜单项:', parse('.menu-item[.active] .nav-link', $));
-console.log('  外部链接:', parse('a[.external]@href', $));
+console.log('\n标准 CSS 类选择器:');
+console.log('  活跃菜单项:', parse('.menu-item.active .nav-link', $));
+console.log('  外部链接:', parse('a.external@href', $));
 
 console.log('\n自定义伪选择器:');
 console.log('  非空段落:', parse('p:not-empty', $));

@@ -33,11 +33,9 @@ const parseCache = new Map();
  * @returns {string} 转换后的选择器
  */
 function parseCustomSyntax(selectorPart) {
-  // 检查类条件语法糖: selector[.class] -> selector.class
-  let result = selectorPart.replace(/([^[\]]+)\[\.([^[\]]+)\]/g, '$1.$2');
-
   // 检查自定义伪选择器: selector:not-empty -> selector:not(:empty)
-  result = result.replace(/([^:]+):not-empty/g, '$1:not(:empty)');
+  // 这是 Cheerio 不支持的语法糖，有实际价值
+  const result = selectorPart.replace(/([^:]+):not-empty/g, '$1:not(:empty)');
 
   return result;
 }
@@ -74,7 +72,7 @@ function parseSelector(selectorPart) {
  * queryParser('[h1]')            // { selector: 'h1', attribute: undefined, filters: [], getAll: true }
  * queryParser('a@href')          // { selector: 'a', attribute: 'href', filters: [], getAll: false }
  * queryParser('span | trim | int') // { selector: 'span', attribute: undefined, filters: [...], getAll: false }
- * queryParser('div[.active]')    // { selector: 'div.active', attribute: undefined, filters: [], getAll: false }
+ * queryParser('div.active')     // { selector: 'div.active', attribute: undefined, filters: [], getAll: false }
  * queryParser('p:not-empty')     // { selector: 'p:not(:empty)', attribute: undefined, filters: [], getAll: false }
  */
 function queryParser(str) {

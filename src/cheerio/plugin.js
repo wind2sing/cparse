@@ -7,7 +7,17 @@ const plus = {
   },
   nextNode() {
     const el = this.get(0);
-    if (el) return el.nextSibling.nodeValue;
+    if (el && el.nextSibling) {
+      // 查找下一个文本节点
+      let sibling = el.nextSibling;
+      while (sibling) {
+        if (sibling.type === 'text' && sibling.data.trim()) {
+          return sibling.data.trim();
+        }
+        sibling = sibling.nextSibling;
+      }
+    }
+    return undefined;
   },
   extract(attr) {
     attr = attr || 'text';
