@@ -104,6 +104,51 @@ describe('Cheerio Module', () => {
       const hrefs = $('a').extractAll('href');
       expect(hrefs).toEqual(['/relative', 'https://example.com']);
     });
+
+    test('should have parse() method on Cheerio instance', () => {
+      expect(typeof $.parse).toBe('function');
+    });
+
+    test('$.parse() should work with basic selectors', () => {
+      expect($.parse('h1')).toBe('Hello World');
+      expect($.parse('.title')).toBe('Hello World');
+      expect($.parse('title')).toBe('Test Page');
+    });
+
+    test('$.parse() should work with attribute extraction', () => {
+      expect($.parse('a.link@href')).toBe('/relative');
+      expect($.parse('a.external@href')).toBe('https://example.com');
+    });
+
+    test('$.parse() should work with array extraction', () => {
+      expect($.parse('[li]')).toEqual(['Item 1', 'Item 2', 'Item 3']);
+      expect($.parse('[a@href]')).toEqual(['/relative', 'https://example.com']);
+    });
+
+    test('$.parse() should work with structured data', () => {
+      const result = $.parse({
+        title: 'h1',
+        content: '.content',
+        items: '[li]',
+        links: '[a@href]'
+      });
+
+      expect(result).toEqual({
+        title: 'Hello World',
+        content: 'This is a test',
+        items: ['Item 1', 'Item 2', 'Item 3'],
+        links: ['/relative', 'https://example.com']
+      });
+    });
+
+    test('$.parse() should work with custom filters', () => {
+      const customFilters = {
+        reverse: (str) => str.split('').reverse().join('')
+      };
+
+      expect($.parse('h1', customFilters)).toBe('Hello World');
+      expect($.parse('h1 | reverse', customFilters)).toBe('dlroW olleH');
+    });
   });
 
   describe('cheerioHookForAxios', () => {

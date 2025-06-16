@@ -48,17 +48,32 @@ const { loadCheerio, parse } = require('cparse');
 const html = '<div class="title">Hello World</div>';
 const $ = loadCheerio(html);
 
-// 基本提取
+// 传统用法
 const title = parse('.title', $); // "Hello World"
 
+// 🎯 新增：简化语法 - 直接在 $ 实例上调用 parse
+const title2 = $.parse('.title'); // "Hello World"
+
 // 数组提取（语法糖）
-const items = parse('[.item]', $); // 所有 .item 元素的文本数组
+const items = $.parse('[.item]'); // 所有 .item 元素的文本数组
 
 // 属性提取（语法糖）
-const links = parse('[a@href]', $); // 所有链接的 href 属性数组
+const links = $.parse('[a@href]'); // 所有链接的 href 属性数组
 
 // 过滤器链
-const price = parse('.price | trim | float', $); // 文本 -> 去空格 -> 转浮点数
+const price = $.parse('.price | trim | float'); // 文本 -> 去空格 -> 转浮点数
+```
+
+### 🎯 简化语法对比
+
+```javascript
+// ❌ 传统用法：需要传递 $ 参数
+const title = parse('.title', $);
+const data = parse({ title: '.title', count: '.count | int' }, $);
+
+// ✅ 简化用法：直接在 $ 实例上调用
+const title = $.parse('.title');
+const data = $.parse({ title: '.title', count: '.count | int' });
 ```
 
 ### 结构化数据提取
@@ -74,12 +89,12 @@ const html = `
 
 const $ = loadCheerio(html);
 
-// 提取结构化数据
-const product = parse({
+// 使用简化语法提取结构化数据
+const product = $.parse({
   title: '.title',
   price: '.price | regex:\\d+\\.\\d+ | float',
   rating: '.rating@data-score | float'
-}, $);
+});
 
 console.log(product);
 // { title: "iPhone 15", price: 999.00, rating: 4.5 }
@@ -96,10 +111,10 @@ const { cheerioHookForAxios, parse } = require('cparse');
 const client = axios.create();
 cheerioHookForAxios(client);
 
-// 响应自动包含 $ 属性
+// 响应自动包含 $ 属性，可以直接使用简化语法
 const response = await client.get('https://example.com');
-const title = parse('title', response.$);
-const links = parse('[a@href]', response.$);
+const title = response.$.parse('title');
+const links = response.$.parse('[a@href]');
 ```
 
 ### Got 集成
@@ -112,10 +127,43 @@ const client = got.extend({});
 cheerioHookForGot(client);
 
 const response = await client.get('https://example.com');
-const data = parse({
+const data = response.$.parse({
   title: 'title',
   description: 'meta[name="description"]@content'
-}, response.$);
+});
+```
+
+## 🎯 简化语法 - 直接在 $ 实例上调用
+
+**v2.0.2+ 新增功能**：现在可以直接在 Cheerio 实例上调用 `parse` 方法，无需传递 `$` 参数！
+
+### 语法对比
+
+| 传统用法 | 简化用法 | 说明 |
+|---------|---------|------|
+| `parse('.title', $)` | `$.parse('.title')` | 基本选择器 |
+| `parse('[.item]', $)` | `$.parse('[.item]')` | 数组提取 |
+| `parse('a@href', $)` | `$.parse('a@href')` | 属性提取 |
+| `parse('.price \| float', $)` | `$.parse('.price \| float')` | 过滤器链 |
+| `parse({...}, $)` | `$.parse({...})` | 结构化数据 |
+
+### 使用示例
+
+```javascript
+const { loadCheerio } = require('cparse');
+const $ = loadCheerio('<div class="title">Hello</div>');
+
+// ✅ 推荐：使用简化语法
+const title = $.parse('.title');
+const data = $.parse({
+  title: '.title',
+  items: '[.item]',
+  link: 'a@href'
+});
+
+// ❌ 传统用法（仍然支持）
+const { parse } = require('cparse');
+const title2 = parse('.title', $);
 ```
 
 ## 🎯 核心语法糖功能
@@ -128,8 +176,8 @@ cparse 的核心价值在于提供简洁的语法糖，简化常见的数据提�
 // 传统 Cheerio 写法
 $('a').map((i, el) => $(el).attr('href')).get();
 
-// cparse 语法糖
-parse('[a@href]', $);
+// cparse 简化语法
+$.parse('[a@href]');
 ```
 
 ### 2. 数组提取语法 `[]`
@@ -138,17 +186,17 @@ parse('[a@href]', $);
 // 传统 Cheerio 写法
 $('.item').map((i, el) => $(el).text()).get();
 
-// cparse 语法糖
-parse('[.item]', $);
+// cparse 简化语法
+$.parse('[.item]');
 ```
 
 ### 3. 标准 CSS 选择器支持
 
 ```javascript
 // 完全支持 Cheerio 原生 CSS 选择器
-parse('div.active', $);           // 类选择器
-parse('input[type="text"]', $);   // 属性选择器
-parse('li:first-child', $);       // 伪选择器
+$.parse('div.active');           // 类选择器
+$.parse('input[type="text"]');   // 属性选择器
+$.parse('li:first-child');       // 伪选择器
 ```
 
 ### 4. 自定义伪选择器
@@ -263,9 +311,9 @@ parse('li:first-child', $)       // 伪选择器
 #### 2. 自定义伪选择器
 ```javascript
 // 语法糖（cparse 扩展）
-parse('p:not-empty', $)
+$.parse('p:not-empty')
 // 转换为 Cheerio 原生
-parse('p:not(:empty)', $)
+$.parse('p:not(:empty)')
 ```
 
 #### 3. 复杂选择器支持

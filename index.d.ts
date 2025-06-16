@@ -82,6 +82,13 @@ declare namespace cparse {
    */
   interface ExtendedCheerioAPI extends CheerioAPI {
     <T extends Element>(selector?: any): ExtendedCheerio<T>;
+
+    /**
+     * 简化的解析方法，直接在 Cheerio 实例上调用
+     * @param rule 解析规则
+     * @param filters 自定义过滤器
+     */
+    parse<T = any>(rule: ParseRule, filters?: Filters): T;
   }
 }
 

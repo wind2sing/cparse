@@ -2,7 +2,7 @@
  * cparse - 一个基于 Cheerio 的 HTML 解析和数据提取工具库
  *
  * @author wind2sing
- * @version 2.0.1
+ * @version 2.0.3
  * @license MIT
  */
 

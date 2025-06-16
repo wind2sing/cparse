@@ -67,6 +67,15 @@ function plugin($) {
       $.prototype[key] = value;
     }
   }
+
+  // 在 Cheerio 实例上添加 parse 方法
+  if ($ && typeof $ === 'function') {
+    $.parse = function(rule, filters) {
+      // 延迟加载 parse 函数以避免循环依赖
+      const parse = require('../parse');
+      return parse(rule, $, filters);
+    };
+  }
 }
 
 module.exports = plugin;
