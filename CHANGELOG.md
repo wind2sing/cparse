@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [1.1.0](https://github.com/wind2sing/cparse/compare/v1.0.6...v1.1.0) (2024-12-16)
+## [1.1.1](https://github.com/wind2sing/cparse/compare/v1.0.6...v1.1.1) (2024-12-16)
+
+### 🐛 修复
+- 修复npm发布版本冲突问题
+
+## [1.1.0] - 2024-12-16 (未发布)
 
 ### 🎉 重大功能更新
 
