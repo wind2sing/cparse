@@ -2,11 +2,22 @@
 const cheerio = require("cheerio");
 const absoluteUrl = require("./absolute-url");
 const enablePlugin = require("./plugin");
-enablePlugin(cheerio);
+
+// 在cheerio 1.0+中，需要在load后的实例上启用插件
+function enablePluginOnInstance($) {
+  if ($ && typeof $ === 'function') {
+    enablePlugin($);
+  }
+  return $;
+}
 
 function loadCheerio(text, cheerioOptions, responseUrl) {
   cheerioOptions = cheerioOptions || {};
   const $ = cheerio.load(text, cheerioOptions);
+
+  // 在cheerio 1.0+中启用插件
+  enablePluginOnInstance($);
+
   if (!cheerioOptions.keepRelativeUrl && responseUrl) {
     absoluteUrl(responseUrl, $);
   }
