@@ -95,6 +95,258 @@ module.exports = {
     }
     return value;
   },
+
+  /**
+   * 正则表达式匹配
+   * @param {*} value - 输入值
+   * @param {string} pattern - 正则表达式模式
+   * @param {string} [flags] - 正则表达式标志
+   * @returns {*} 匹配结果或原始值
+   * @example
+   * regex("hello123", "\\d+") // ["123"]
+   * regex("Hello World", "\\w+", "g") // ["Hello", "World"]
+   */
+  regex: (value, pattern, flags) => {
+    if (typeof value !== 'string') return value;
+    try {
+      const regex = new RegExp(pattern, flags);
+      const matches = value.match(regex);
+      return matches ? Array.from(matches) : [];
+    } catch (error) {
+      console.warn(`Invalid regex pattern: ${pattern}`, error.message);
+      return value;
+    }
+  },
+
+  /**
+   * 字符串替换
+   * @param {*} value - 输入值
+   * @param {string} search - 搜索字符串或正则表达式
+   * @param {string} replacement - 替换字符串
+   * @param {string} [flags] - 正则表达式标志（当search为正则时）
+   * @returns {*} 替换后的字符串
+   * @example
+   * replace("hello world", "world", "universe") // "hello universe"
+   * replace("hello123world456", "\\d+", "X", "g") // "helloXworldX"
+   */
+  replace: (value, search, replacement, flags) => {
+    if (typeof value !== 'string') return value;
+    try {
+      if (flags) {
+        // 使用正则表达式替换
+        const regex = new RegExp(search, flags);
+        return value.replace(regex, replacement);
+      } else {
+        // 简单字符串替换
+        return value.replace(search, replacement);
+      }
+    } catch (error) {
+      console.warn(`Invalid replace pattern: ${search}`, error.message);
+      return value;
+    }
+  },
+
+  /**
+   * 字符串分割
+   * @param {*} value - 输入值
+   * @param {string} separator - 分隔符
+   * @param {number} [limit] - 限制分割数量
+   * @returns {*} 分割后的数组
+   * @example
+   * split("a,b,c", ",") // ["a", "b", "c"]
+   * split("a,b,c,d", ",", 2) // ["a", "b"]
+   */
+  split: (value, separator, limit) => {
+    if (typeof value !== 'string') return value;
+    return value.split(separator, limit);
+  },
+
+  /**
+   * 数组连接
+   * @param {*} value - 输入值（数组）
+   * @param {string} [separator=","] - 连接符
+   * @returns {*} 连接后的字符串
+   * @example
+   * join(["a", "b", "c"], "-") // "a-b-c"
+   * join(["a", "b", "c"]) // "a,b,c"
+   */
+  join: (value, separator = ',') => {
+    if (Array.isArray(value)) {
+      return value.join(separator);
+    }
+    return value;
+  },
+
+  /**
+   * 首字母大写
+   * @param {*} value - 输入值
+   * @returns {*} 首字母大写的字符串
+   * @example
+   * capitalize("hello world") // "Hello world"
+   */
+  capitalize: (value) => {
+    if (typeof value !== 'string') return value;
+    return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+  },
+
+  /**
+   * 转换为大写
+   * @param {*} value - 输入值
+   * @returns {*} 大写字符串
+   * @example
+   * upper("hello") // "HELLO"
+   */
+  upper: (value) => {
+    if (typeof value !== 'string') return value;
+    return value.toUpperCase();
+  },
+
+  /**
+   * 转换为小写
+   * @param {*} value - 输入值
+   * @returns {*} 小写字符串
+   * @example
+   * lower("HELLO") // "hello"
+   */
+  lower: (value) => {
+    if (typeof value !== 'string') return value;
+    return value.toLowerCase();
+  },
+
+  /**
+   * 标题格式化（每个单词首字母大写）
+   * @param {*} value - 输入值
+   * @returns {*} 标题格式的字符串
+   * @example
+   * title("hello world") // "Hello World"
+   */
+  title: (value) => {
+    if (typeof value !== 'string') return value;
+    return value.replace(/\w\S*/g, (txt) =>
+      txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    );
+  },
+
+  /**
+   * 获取字符串长度
+   * @param {*} value - 输入值
+   * @returns {*} 字符串长度或原始值
+   * @example
+   * length("hello") // 5
+   * length([1,2,3]) // 3
+   */
+  length: (value) => {
+    if (typeof value === 'string' || Array.isArray(value)) {
+      return value.length;
+    }
+    return value;
+  },
+
+  /**
+   * 获取数组第一个元素
+   * @param {*} value - 输入值
+   * @returns {*} 第一个元素或原始值
+   * @example
+   * first([1,2,3]) // 1
+   * first("hello") // "h"
+   */
+  first: (value) => {
+    if (Array.isArray(value)) {
+      return value[0];
+    }
+    if (typeof value === 'string') {
+      return value.length > 0 ? value[0] : undefined;
+    }
+    return value;
+  },
+
+  /**
+   * 获取数组最后一个元素
+   * @param {*} value - 输入值
+   * @returns {*} 最后一个元素或原始值
+   * @example
+   * last([1,2,3]) // 3
+   * last("hello") // "o"
+   */
+  last: (value) => {
+    if (Array.isArray(value)) {
+      return value[value.length - 1];
+    }
+    if (typeof value === 'string') {
+      return value.length > 0 ? value[value.length - 1] : undefined;
+    }
+    return value;
+  },
+
+  /**
+   * 数组去重
+   * @param {*} value - 输入值
+   * @returns {*} 去重后的数组或原始值
+   * @example
+   * unique([1,2,2,3,3,3]) // [1,2,3]
+   */
+  unique: (value) => {
+    if (Array.isArray(value)) {
+      return [...new Set(value)];
+    }
+    return value;
+  },
+
+  /**
+   * 数组排序
+   * @param {*} value - 输入值
+   * @param {string} [order="asc"] - 排序方向：asc（升序）或desc（降序）
+   * @returns {*} 排序后的数组或原始值
+   * @example
+   * sort([3,1,2]) // [1,2,3]
+   * sort([3,1,2], "desc") // [3,2,1]
+   */
+  sort: (value, order = 'asc') => {
+    if (Array.isArray(value)) {
+      const sorted = [...value].sort((a, b) => {
+        if (a < b) return order === 'asc' ? -1 : 1;
+        if (a > b) return order === 'asc' ? 1 : -1;
+        return 0;
+      });
+      return sorted;
+    }
+    return value;
+  },
+
+  /**
+   * 数组过滤（移除空值）
+   * @param {*} value - 输入值
+   * @returns {*} 过滤后的数组或原始值
+   * @example
+   * compact([1, null, 2, undefined, 3, "", 4]) // [1, 2, 3, 4]
+   */
+  compact: (value) => {
+    if (Array.isArray(value)) {
+      return value.filter(item =>
+        item !== null &&
+        item !== undefined &&
+        item !== '' &&
+        item !== 0 &&
+        !Number.isNaN(item)
+      );
+    }
+    return value;
+  },
+
+  /**
+   * 数字格式化
+   * @param {*} value - 输入值
+   * @param {number} [decimals=2] - 小数位数
+   * @returns {*} 格式化后的数字字符串或原始值
+   * @example
+   * number(123.456, 2) // "123.46"
+   * number(123.456, 0) // "123"
+   */
+  number: (value, decimals = 2) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return value;
+    return num.toFixed(decimals);
+  },
   /**
    * 转换为日期对象
    * @param {*} v - 输入值

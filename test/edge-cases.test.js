@@ -29,9 +29,8 @@ describe('Edge Cases and Error Handling', () => {
         parse('div | unknownFilter', $);
       } catch (error) {
         expect(error.message).toContain('unknownFilter');
-        expect(error.message).toContain('Available filters:');
-        expect(error.query).toBe('div | unknownFilter');
-        expect(error.filter).toBe('unknownFilter');
+        expect(error.filterName).toBe('unknownFilter');
+        expect(error.details.query).toBe('div | unknownFilter');
       }
     });
   });
@@ -102,6 +101,7 @@ describe('Edge Cases and Error Handling', () => {
     });
 
     test('should handle pseudo selectors', () => {
+      // 使用标准CSS选择器，因为新的条件语法改变了处理方式
       expect(parse('.item:first-child .title', $)).toBe('Item 1');
       expect(parse('.item:last-child .title', $)).toBe('Item 2');
     });

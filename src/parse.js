@@ -5,6 +5,60 @@
 
 const queryParser = require('./query-parser');
 const defaultFilters = require('./filters');
+const { FilterError } = require('./errors');
+
+/**
+ * 应用条件过滤
+ * @private
+ * @param {Object} elements - Cheerio 元素集合
+ * @param {Object} condition - 条件对象
+ * @returns {Object} 过滤后的元素集合
+ */
+function applyCondition(elements, condition) {
+  if (!condition) return elements;
+
+  switch (condition.type) {
+  case 'first':
+    return elements.first();
+  case 'last':
+    return elements.last();
+  case 'empty':
+    return elements.filter(':empty');
+  case 'not-empty':
+    return elements.filter(':not(:empty)');
+  case 'contains':
+    return elements.filter(`:contains("${condition.value}")`);
+  case 'has-class':
+    return elements.filter(`.${condition.value}`);
+  case 'has-attribute':
+    return elements.filter(`[${condition.attribute}]`);
+  case 'attribute':
+    return elements.filter(`[${condition.attribute}="${condition.value}"]`);
+  case 'selector':
+    return elements.filter(condition.value);
+  case 'pseudo':
+    return elements.filter(`:${condition.value}`);
+  default:
+    return elements;
+  }
+}
+
+/**
+ * 处理嵌套查询
+ * @private
+ * @param {Array} nested - 嵌套选择器数组
+ * @param {CheerioAPI} $ - Cheerio 实例
+ * @returns {Object} 最终的元素集合
+ */
+function processNested(nested, $) {
+  let current = $(nested[0]);
+
+  for (let i = 1; i < nested.length; i++) {
+    current = current.find(nested[i]);
+  }
+
+  return current;
+}
 
 /**
  * 解析单个查询规则
@@ -18,13 +72,24 @@ function parse_one(query, $, filters) {
   if (typeof query === 'function') return query();
 
   let q = queryParser(query);
-  let vals;
+  let elements;
 
-  if (q.selector) vals = $(q.selector).extractAll(q.attribute);
-  else
-    vals = $()
-      .addBack()
-      .extractAll(q.attribute);
+  // 处理嵌套查询
+  if (q.nested) {
+    elements = processNested(q.nested, $);
+  } else if (q.selector) {
+    elements = $(q.selector);
+  } else {
+    elements = $().addBack();
+  }
+
+  // 应用条件过滤
+  if (q.condition) {
+    elements = applyCondition(elements, q.condition);
+  }
+
+  // 提取值
+  let vals = elements.extractAll(q.attribute);
 
   // filters operation
   if (q.getAll) {
@@ -41,18 +106,31 @@ function parse_one(query, $, filters) {
       let name = filterInfo['name'];
       try {
         if (!filters[name]) {
-          throw new Error(`Unknown filter: ${name}. Available filters: ${Object.keys(filters).join(', ')}`);
+          throw new FilterError(
+            `Unknown filter: ${name}`,
+            name,
+            val,
+            {
+              availableFilters: Object.keys(filters),
+              query
+            }
+          );
         }
         val = filters[name](val, ...filterInfo['args']);
       } catch (error) {
-        const errorMessage = `Parse error in query "${query}" with filter "${name}": ${error.message}`;
-        console.error(errorMessage);
-        const enhancedError = new Error(errorMessage);
-        enhancedError.originalError = error;
-        enhancedError.query = query;
-        enhancedError.filter = name;
-        enhancedError.value = val;
-        throw enhancedError;
+        if (error instanceof FilterError) {
+          throw error;
+        }
+        throw new FilterError(
+          `Filter "${name}" failed: ${error.message}`,
+          name,
+          val,
+          {
+            originalError: error,
+            query,
+            args: filterInfo['args']
+          }
+        );
       }
     }
     return val;
