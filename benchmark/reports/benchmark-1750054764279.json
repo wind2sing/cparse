@@ -1,0 +1,62 @@
+{
+  "timestamp": "2025-06-16T06:19:24.277Z",
+  "nodeVersion": "v20.18.0",
+  "platform": "darwin",
+  "arch": "arm64",
+  "results": {
+    "loadSimple": {
+      "totalTime": 16.512792,
+      "avgTime": 0.016512792000000002,
+      "opsPerSec": 60559.110779085684,
+      "iterations": 1000
+    },
+    "loadMedium": {
+      "totalTime": 37.532917,
+      "avgTime": 0.037532917,
+      "opsPerSec": 26643.27955112042,
+      "iterations": 1000
+    },
+    "loadComplex": {
+      "totalTime": 232.717875,
+      "avgTime": 2.32717875,
+      "opsPerSec": 429.7048518511954,
+      "iterations": 100
+    },
+    "parseSimple": {
+      "totalTime": 10.050459,
+      "avgTime": 0.010050459,
+      "opsPerSec": 99497.94332776245,
+      "iterations": 1000
+    },
+    "parseComplex": {
+      "totalTime": 11.829583,
+      "avgTime": 0.011829583,
+      "opsPerSec": 84533.8335256619,
+      "iterations": 1000
+    },
+    "parseArray": {
+      "totalTime": 8.270667,
+      "avgTime": 0.008270666999999999,
+      "opsPerSec": 120909.23259272803,
+      "iterations": 1000
+    },
+    "parseObject": {
+      "totalTime": 84.690334,
+      "avgTime": 0.8469033399999999,
+      "opsPerSec": 1180.7722945100206,
+      "iterations": 100
+    },
+    "parseWithFilters": {
+      "totalTime": 281.714084,
+      "avgTime": 0.28171408400000003,
+      "opsPerSec": 3549.6982820354833,
+      "iterations": 1000
+    },
+    "parseComplexObject": {
+      "totalTime": 36.994875,
+      "avgTime": 3.6994875,
+      "opsPerSec": 270.3077115411256,
+      "iterations": 10
+    }
+  }
+}

@@ -1,4 +1,4 @@
-const { loadCheerio, parse } = require("../index.js");
+const { loadCheerio, parse } = require('../index.js');
 const html = `<html><head></head><body><h2 class="title welcome">Hello there!</h2><ul id="fruits">
 <li class="apple">Apple</li>
 <li class="orange">Orange</li>
@@ -10,16 +10,16 @@ const html = `<html><head></head><body><h2 class="title welcome">Hello there!</h
 <a class="next" href="/?page=2">Next page 2023-01-04</a>
 </body></html>`;
 
-test("loadCheerio", () => {
-  const $ = loadCheerio(html, null, "https://example.com");
+test('loadCheerio', () => {
+  const $ = loadCheerio(html, null, 'https://example.com');
   expect($).toBeTruthy();
-  expect($("h2").text()).toEqual("Hello there!");
-  expect($("a.next").attr("href")).toEqual("https://example.com/?page=2");
+  expect($('h2').text()).toEqual('Hello there!');
+  expect($('a.next').attr('href')).toEqual('https://example.com/?page=2');
 });
 
-test("parse-filters", () => {
+test('parse-filters', () => {
   const $ = loadCheerio(html);
-  expect($("a").attr("href")).toEqual("/?page=2");
-  expect(parse("a.next | date:UTC", $)).toEqual(new Date("2023-01-04"));
-  expect(parse("[#number li | int]", $)).toEqual([123, 8989, 344]);
+  expect($('a').attr('href')).toEqual('/?page=2');
+  expect(parse('a.next | date:UTC', $)).toEqual(new Date('2023-01-04'));
+  expect(parse('[#number li | int]', $)).toEqual([123, 8989, 344]);
 });

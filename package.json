@@ -1,24 +1,61 @@
 {
   "name": "cparse",
   "version": "1.0.6",
+  "description": "一个基于 Cheerio 的 HTML 解析和数据提取工具库",
   "main": "index.js",
   "license": "MIT",
+  "author": "wind2sing",
+  "engines": {
+    "node": ">=18.17.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/ test/ index.js",
+    "lint:fix": "eslint src/ test/ index.js --fix",
+    "pretest": "npm run lint"
   },
   "dependencies": {
     "cheerio": "^1.1.0"
   },
   "keywords": [
     "parse",
-    "cheerio"
+    "cheerio",
+    "html",
+    "parser",
+    "scraping",
+    "web-scraping",
+    "dom",
+    "jquery",
+    "selector",
+    "extraction",
+    "data-extraction",
+    "axios",
+    "got",
+    "http-client",
+    "filter",
+    "chinese"
   ],
   "homepage": "https://github.com/wind2sing/cparse#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/wind2sing/cparse.git"
   },
+  "bugs": {
+    "url": "https://github.com/wind2sing/cparse/issues"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "src/",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "eslint": "^9.29.0",
     "jest": "^30.0.0"
   }
 }

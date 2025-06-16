@@ -8,9 +8,9 @@
 
 module.exports = function(str) {
   return str.split(/ *\| */).map(function(call) {
-    var parts = call.split(":");
+    var parts = call.split(':');
     var name = parts.shift();
-    var args = parseArgs(parts.join(":"));
+    var args = parseArgs(parts.join(':'));
 
     return {
       name: name,
