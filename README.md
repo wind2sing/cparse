@@ -253,6 +253,41 @@ parse('.price | trim | regex:\\d+\\.\\d+ | float', $);
 | `date` | 日期解析 | `parse('.date \| date', $)` |
 | `size` | 尺寸解析 | `parse('.filesize \| size', $)` |
 | `number` | 数字格式化 | `parse('.price \| number:2', $)` |
+| `default` | 提供默认值 | `parse('.optional \| default:"N/A"', $)` |
+
+### 使用 `default` 过滤器处理缺失值
+
+在抓取数据时，经常会遇到某些字段缺失的情况。如果一个选择器没有匹配到任何元素，解析结果通常是 `null`，这可能导致后续的过滤器（如 `float`）出错。使用 `default` 过滤器可以优雅地处理这种情况：
+
+```javascript
+const { loadCheerio } = require('cparse');
+
+const html = `
+<div class="product">
+  <span class="name">Product A</span>
+  <span class="price">$19.99</span>
+</div>
+<div class="product">
+  <span class="name">Product B</span>
+  // 价格缺失
+</div>
+`;
+
+const $ = loadCheerio(html);
+
+const products = $.parse(['.product', {
+  name: '.name',
+  // 如果 .price 不存在，结果为 null，float(null) 会是 NaN
+  // 使用 default 过滤器提供一个默认值 0
+  price: '.price | float | default:0'
+}]);
+
+console.log(products);
+// [
+//   { name: 'Product A', price: 19.99 },
+//   { name: 'Product B', price: 0 }
+// ]
+```
 
 ## 📚 API 参考
 

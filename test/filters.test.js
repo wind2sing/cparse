@@ -68,6 +68,32 @@ describe('Filters', () => {
     });
   });
 
+  describe('default filter', () => {
+    test('should return default value for null input', () => {
+      expect(filters.default(null, 'default value')).toBe('default value');
+      expect(filters.default(null, 0)).toBe(0);
+      expect(filters.default(null, false)).toBe(false);
+    });
+
+    test('should return default value for undefined input', () => {
+      expect(filters.default(undefined, 'default value')).toBe('default value');
+      expect(filters.default(undefined, 123)).toBe(123);
+      expect(filters.default(undefined, true)).toBe(true);
+    });
+
+    test('should return original value if it is not null or undefined', () => {
+      expect(filters.default('some string', 'default')).toBe('some string');
+      expect(filters.default(0, 'default')).toBe(0);
+      expect(filters.default(false, 'default')).toBe(false);
+      expect(filters.default('', 'default')).toBe('');
+      const arr = [];
+      expect(filters.default(arr, 'default')).toBe(arr);
+      const obj = {};
+      expect(filters.default(obj, 'default')).toBe(obj);
+      expect(filters.default(NaN, 'default')).toBeNaN();
+    });
+  });
+
   describe('trim filter', () => {
     test('should trim whitespace from strings', () => {
       expect(filters.trim('  hello  ')).toBe('hello');

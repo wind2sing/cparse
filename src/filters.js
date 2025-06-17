@@ -58,6 +58,24 @@ module.exports = {
   bool: (v) => Boolean(v),
 
   /**
+   * 提供默认值
+   * 如果输入值为 null 或 undefined，则返回指定的默认值。
+   * @param {*} value - 输入值
+   * @param {*} defaultValue - 默认值
+   * @returns {*} 如果输入值无效则为默认值，否则为原始值
+   * @example
+   * default(null, "Not Found") // "Not Found"
+   * default(undefined, 0) // 0
+   * default("some value", "default") // "some value"
+   */
+  default: (value, defaultValue) => {
+    if (value === null || typeof value === 'undefined') {
+      return defaultValue;
+    }
+    return value;
+  },
+
+  /**
    * 去除字符串首尾空白
    * @param {*} value - 输入值
    * @returns {*} 处理后的值
