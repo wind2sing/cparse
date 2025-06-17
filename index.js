@@ -7,8 +7,12 @@
  */
 
 const parse = require('./src/parse');
-const cheerio = require('./src/cheerio');
-const { loadCheerio, cheerioHookForAxios, cheerioHookForGot } = cheerio;
+const { loadCheerio } = require('./src/cheerio');
+const {
+  createCheerioHook,
+  cheerioHookForAxios,
+  cheerioHookForGot,
+} = require('./src/integrations');
 
 /**
  * cparse 主要导出模块
@@ -28,6 +32,13 @@ module.exports = {
    * @see {@link module:cheerio.loadCheerio}
    */
   loadCheerio,
+
+  /**
+   * 创建通用 Cheerio 钩子的工厂函数
+   * @type {Function}
+   * @see {@link module:integrations.createCheerioHook}
+   */
+  createCheerioHook,
 
   /**
    * 为 Axios 添加 Cheerio 支持

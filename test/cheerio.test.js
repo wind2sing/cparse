@@ -2,7 +2,8 @@
  * Cheerio 模块单元测试
  */
 
-const { loadCheerio, cheerioHookForAxios, cheerioHookForGot } = require('../src/cheerio');
+const { loadCheerio } = require('../src/cheerio');
+const { cheerioHookForAxios, cheerioHookForGot } = require('../src/integrations');
 
 describe('Cheerio Module', () => {
   const sampleHtml = `

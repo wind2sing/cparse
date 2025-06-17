@@ -508,3 +508,64 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 ---
 
 **⭐ 如果这个项目对你有帮助，请给个 Star！**
+
+### 🔌 插件化架构与自定义集成
+
+**v2.1.0+ 新增功能**：`cparse` 引入了通用的插件创建工厂函数 `createCheerioHook`，允许你为任何 HTTP 客户端（或任何返回 HTML 的数据源）轻松创建集成插件。
+
+`cheerioHookForAxios` 和 `cheerioHookForGot` 内部就是使用这个工厂函数实现的。
+
+#### `createCheerioHook(options)`
+
+这个函数接受一个配置对象，并返回一个标准的钩子函数。
+
+**配置项 `options`:**
+
+*   `name` (`string`, **必需**): 插件的名称，用于错误和警告信息 (例如: `'node-fetch'`)。
+*   `validate(instance)` (`function`, **必需**): 一个函数，用于验证传入的客户端实例是否有效。如果无效，应返回 `false`。
+*   `attach(instance, hookFn)` (`function`, **必需**): 一个函数，负责将核心处理逻辑 (`hookFn`) 附加到客户端实例的生命周期钩子上（例如，在响应完成后执行）。
+*   `getBody(response)` (`function`, **必需**): 一个函数，告诉 `cparse` 如何从客户端的响应对象中提取 HTML 文本。
+*   `getUrl(response)` (`function`, **必需**): 一个函数，用于从响应对象中获取最终的请求 URL，这对于解析页面上的相对链接至关重要。
+
+#### 示例：为 `node-fetch` 创建集成插件
+
+下面是一个完整的示例，展示了如何为 `node-fetch`（v3+）封装一个解析钩子。
+
+```javascript
+const fetch = require('node-fetch');
+const { createCheerioHook, parse } = require('cparse');
+
+// 1. 使用 createCheerioHook 定义针对 node-fetch 的钩子
+const cheerioHookForFetch = createCheerioHook({
+  name: 'node-fetch',
+  // 验证 fetch 函数本身（在这个例子中我们直接扩展 fetch）
+  validate: (instance) => typeof instance === 'function',
+  // getBody 和 getUrl 是异步的，所以 attach 也要是 async
+  getBody: async (response) => await response.text(),
+  getUrl: (response) => response.url,
+  // 核心：替换原始的 fetch 函数
+  attach: (originalFetch, hook) => {
+    // 返回一个新的、被包装过的 fetch 函数
+    return async (...args) => {
+      const response = await originalFetch(...args);
+      // 调用我们通用的处理逻辑
+      // 注意：由于 getBody 是异步的，这里也需要 await
+      return await hook(response);
+    };
+  },
+});
+
+// 2. 包装原始的 fetch 函数
+const enhancedFetch = cheerioHookForFetch(fetch);
+
+// 3. 使用增强后的 fetch
+async function main() {
+  const response = await enhancedFetch('https://example.com');
+  const title = response.$.parse('title');
+  console.log(title); // "Example Domain"
+}
+
+main();
+```
+
+通过这种方式，你可以将 `cparse` 的解析能力无缝集成到任何你选择的工具中。
