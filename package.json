@@ -1,6 +1,6 @@
 {
   "name": "cparse",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "一个基于 Cheerio 的 HTML 解析和数据提取工具库",
   "main": "index.js",
   "license": "MIT",
